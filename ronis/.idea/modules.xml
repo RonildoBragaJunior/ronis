@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../network/.idea/network.iml" filepath="$PROJECT_DIR$/../network/.idea/network.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ronis.iml" filepath="$PROJECT_DIR$/.idea/ronis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../wallet/.idea/wallet.iml" filepath="$PROJECT_DIR$/../wallet/.idea/wallet.iml" />
+    </modules>
+  </component>
+</project>
