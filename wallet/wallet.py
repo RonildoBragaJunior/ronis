@@ -1,32 +1,48 @@
-from flask import request, Flask
-import requests
-
-headers = {"Content-Type": "application/json"}
-app = Flask(__name__)
+from random import randint
+import uuid
+import time
 
 
-@app.route("/transaction", methods=["GET"])
-def transaction():
-    unconfirmed_txn = request.get_json()
+class Transaction:
 
-    response = requests.get("http://localhost:8000/get_nodes")
-    if response.status_code == 200:
-        nodes = response.json()["nodes"]
-        for node in nodes:
-            requests.post(node+"/add_transaction", data=unconfirmed_txn, headers=headers)
-
-    return "unconfirmed transaction has been broadcast"
+    def __init__(self, prev_address=None, address=None, amount=0, fee=0, time=time.time()):
+        self.prev_address = prev_address
+        self.address = address
+        self.amount = amount
+        self.fee = fee
+        self.time = time
 
 
-@app.route("/broadcast", methods=["GET"])
-def broadcast():
-    response = requests.get("http://localhost:8000/get_nodes")
+class Wallet:
+    utxns = []
+    wallet_address = str(uuid.uuid4())
 
-    if response.status_code == 200:
-        nodes = response.json()["nodes"]
-        for node in nodes:
-            print(node)
+    def __init__(self):
+        transactions = 1000
+        for i in range(0, transactions):
+            utxn = Transaction(address=self.wallet_address, amount=randint(0, 1000))
+            self.utxns.append(utxn)
 
+    def move_transaction(self, input_transactions, new_address, amount):
+        prev_address = []
+        total_amount = amount
 
-if __name__ == '__main__':
-    app.run()
+        for input_transaction in input_transactions:
+            prev_address.append(input_transaction)
+
+            if input_transaction.amount > amount:
+                new_transaction = Transaction(
+                    prev_address=prev_address,
+                    address=new_address,
+                    amount=total_amount
+                )
+                if input_transaction.amount - amount > 0:
+                    rest_transaction = Transaction(
+                        prev_address=[input_transaction],
+                        address=self.wallet_address,
+                        amount=input_transaction.amount - amount
+                    )
+            else:
+                amount -= input_transaction.amount
+
+        return new_transaction, rest_transaction

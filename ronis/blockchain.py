@@ -1,16 +1,17 @@
 import json
-import uuid
 from hashlib import sha256
 from datetime import datetime
+import time
 
 
 class Transaction:
-    def __init__(self, uuid=str(uuid.uuid4()), sender=uuid.uuid4(), receiver=uuid.uuid4(), amount=0, fee=0):
-        self.uuid = uuid
-        self.sender = sender
-        self.receiver = receiver
+
+    def __init__(self, prev_address, address, amount=0, fee=0, time=time.time()):
+        self.prev_address = prev_address
+        self.address = address
         self.amount = amount
         self.fee = fee
+        self.time = time
 
 
 class Block:
@@ -34,8 +35,8 @@ class Block:
             self.proof += 1
             self.hash = self.create_hash()
 
-    def mine(self, node_address, reward_address):
-        reward_transaction = Transaction(sender=node_address, receiver=reward_address, amount=self.reward)
+    def mine_block(self, node_address, reward_address):
+        reward_transaction = Transaction(prev_address=node_address, address=reward_address, amount=self.reward)
         self.transactions.append(reward_transaction.__dict__)
         self.calculate()
 

@@ -20,7 +20,7 @@ class Node:
             if v not in self.network:
                 self.network.append(v)
 
-    def add_transaction(self, transaction):
+    def add_unconfirmed_txn(self, transaction):
         self.unconfirmed_txn.append(transaction)
 
         # announce transaction on the network
@@ -33,9 +33,7 @@ class Node:
         new_block = Block(
             prev_hash=self.blockchain.chain[-1].hash,
             transactions=self.unconfirmed_txn[0:5])
-        new_block.mine(
-            self.node_address,
-            self.reward_address)
+        new_block.mine_block(self.reward_address)
         self.blockchain.chain.append(new_block)
 
         # announce mined block on the network

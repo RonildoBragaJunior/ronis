@@ -22,7 +22,7 @@ def register():
 def add_transaction():
     data = request.get_json()
     transaction = Transaction(**data)
-    node.add_transaction(transaction.__dict__)
+    node.add_unconfirmed_txn(transaction.__dict__)
     return "transaction received", 200
 
 
