@@ -1,18 +1,36 @@
-from flask import request, Flask
 import requests
+from flask import request, Flask, jsonify
+
+from wallet import Transaction
 from wallet import Wallet
-from random import seed, randint
-import uuid
-import time
-import json
 
 headers = {"Content-Type": "application/json"}
 app = Flask(__name__)
 wallet = Wallet()
 
 
-@app.route("/move_transaction", methods=["GET"])
-def move_transaction():
+@app.route("/add_utxn", methods=["POST"])
+def add_utxn():
+    json = request.get_json()
+    utxn = Transaction(
+        prev_address=json["prev_address"],
+        address=json["address"],
+        amount=json["amount"]
+    )
+    wallet.utxns.append(utxn)
+
+    return "ok", 200
+
+
+@app.route("/get_utxns", methods=["GET"])
+def get_utxns():
+    result = jsonify([ob.__dict__ for ob in wallet.utxns])
+
+    return result, 200
+
+
+@app.route("/move_utxn", methods=["POST"])
+def move_utxn():
     json = request.get_json()
     address, amount = json["address"], json["amount"]
     input_tx, total_input = [], 0
@@ -33,23 +51,7 @@ def move_transaction():
         for node in nodes:
             requests.post(node + "/add_transaction", data=json.dumps(new_transaction), headers=headers)
 
-    return "unconfirmed transaction has been broadcast"
-
-
-@app.route("/test", methods=["GET"])
-def test():
-    transactions = 1000
-
-    def broadcast(self):
-        headers = {'Content-Type': "application/json"}
-        nodes = ["http://127.0.0.1:8000"]
-        seed(1)
-
-        for i in range(0, self.transactions):
-            data = {"from": str(uuid.uuid4()), "to": str(uuid.uuid4()), "amt": randint(0, 1000), "time": time.time()}
-            for node in nodes:
-                requests.post(node + "/new_transaction", data=json.dumps(data), headers=headers)
-                print(i)
+    return "ok", 200
 
 
 if __name__ == '__main__':

@@ -17,12 +17,6 @@ class Wallet:
     utxns = []
     wallet_address = str(uuid.uuid4())
 
-    def __init__(self):
-        transactions = 1000
-        for i in range(0, transactions):
-            utxn = Transaction(address=self.wallet_address, amount=randint(0, 1000))
-            self.utxns.append(utxn)
-
     def move_transaction(self, input_transactions, new_address, amount):
         prev_address = []
         total_amount = amount
